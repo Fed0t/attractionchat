@@ -1,0 +1,1 @@
+export const UPDATE_SESSION = 'session/UPDATE_SESSION';

@@ -1,6 +1,9 @@
-import { combineReducers } from 'redux'
-import counter from './counter'
+import {combineReducers} from 'redux'
+import conversations from './conversations/reducer'
+import session from './session/reducer'
 
-export default combineReducers({
-  counter
-})
+let rootReducer = combineReducers({
+    conversations,
+    session
+});
+export default rootReducer;
