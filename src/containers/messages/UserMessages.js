@@ -11,14 +11,12 @@ import {arrayUnique} from '../../utils/Utils';
 import SingleMessage from "./SingleMessage";
 import moment from "moment";
 import ReactLoading from 'react-loading';
-
 import {
     isMobile
 } from "react-device-detect";
 
-
 import {
-    fetchMessages,
+    fetchConversation,
     fetchMoreMessages,
     fetchMoreMessagesWithoutDispatch,
     unreadConversation
@@ -33,7 +31,7 @@ class UserMessages extends Component {
             loading: true,
             fetched: false,
             username: username,
-            loadMoreMessages: true,
+            hasMoreItems: true,
             remote: null,
             readed: false,
         };
@@ -49,14 +47,13 @@ class UserMessages extends Component {
         if (this.props.valid.list.length > 0 || this.props.unread.list.length > 0 || this.props.archived.list.length > 0 || this.props.search.list.length > 0) {
             let fullList = this.getConversationsFullList();
             return findIndex(fullList, function (conversation) {
-                if (conversation) {
+                if (conversation && conversation.receiver.username) {
                     return conversation.receiver.username.toLowerCase() === username.toLowerCase();
                 }
             });
         }
         return false;
     }
-
 
     getConversation(username) {
         let index = this.getConversationIndex(username);
@@ -79,20 +76,17 @@ class UserMessages extends Component {
 
     getRemoteConversation(username) {
         if (this.getConversationIndex(username) === -1 && this.state.fetched === false) {
-            this.props.fetchMessages(username).then((res) => {
+            this.props.fetchConversation(username).then((res) => {
                 this.setState({
                     remote: res.data,
                     fetched: true,
-                    loading:false,
+                    loading: false,
                 });
             });
         }
     }
 
     loadMoreMessages(username) {
-        this.setState({
-            loadMoreMessages: false,
-        });
         let fullList = this.getConversationsFullList();
         let conversationIndex = findIndex(fullList, function (receiver) {
             if (receiver) {
@@ -103,22 +97,11 @@ class UserMessages extends Component {
             let nextPageUrl = fullList[conversationIndex].messagesPaginated.next_page_url;
             let conversationId = fullList[conversationIndex].id;
             this.props.fetchMoreMessages(nextPageUrl, conversationId).then((res) => {
-                this.setState({
-                    loadMoreMessages: true,
-                });
-            });
-        } else if (this.state.remote && this.state.remote.messagesPaginated.next_page_url) {
-            this.props.fetchMoreMessagesWithoutDispatch(this.state.remote.messagesPaginated.next_page_url, this.state.remote.id).then((res) => {
-                this.setState({
-                    remote: {
-                        ...this.state.remote,
-                        messagesPaginated: {
-                            ...res.data.messagesPaginated,
-                            data: this.state.remote.messagesPaginated.data.concat(res.data.messagesPaginated.data)
-                        }
-                    },
-                    loadMoreMessages: true
-                });
+                if(res.data.messagesPaginated.next_page_url === null){
+                    this.setState({
+                        hasMoreItems: false,
+                    });
+                }
             });
         }
     }
@@ -129,7 +112,6 @@ class UserMessages extends Component {
             this.setState({
                 username: username,
                 readed: false,
-                loadMoreMessages:true,
             });
         }
 
@@ -167,10 +149,6 @@ class UserMessages extends Component {
         const {username} = this.props.match.params;
         let messages = this.getConversation(username);
 
-        if (this.state.remote && this.state.remote.receiver && username === this.state.remote.receiver.username) {
-            messages = this.state.remote;
-        }
-
         let currentDay = moment().format('DD-MMM-YYYY');
         let previousDay = currentDay;
         let messagesCollection = [];
@@ -188,7 +166,7 @@ class UserMessages extends Component {
                         transitionAppearTimeout={500}
                         transitionEnter={false}
                         transitionEnterTimeout={500}
-                        key={'transition'+message.message_id}
+                        key={'transition' + message.message_id}
                         transitionLeaveTimeout={300}>
                         {
                             (currentDay !== previousDay) && (
@@ -232,22 +210,24 @@ class UserMessages extends Component {
         let conversation = this.getConversation(username);
 
         let profileUrl = '/profile/' + username;
-        if(isMobile){
-            profileUrl = '/m/profile/'+ username;
+        if (isMobile) {
+            profileUrl = '/m/profile/' + username;
         }
 
-        if(this.state.loading && !conversation){
-            return  <ReactLoading className={'center-block loader-pad'} type={'spin'} color='#921090' height={'15%'} width={'15%'} />
+        if (this.state.loading && !conversation) {
+            return <ReactLoading className={'center-block loader-pad'} type={'spin'} color='#921090' height={'15%'}
+                                 width={'15%'}/>
         }
 
         return (
             <div>
-
                 <div className="panel panel-default">
-                    <div className="panel-heading user-info-panel" >
+                    <div className="panel-heading user-info-panel">
                         {(userObject) &&
                         <div>
-                            {isMobile && <span className="glyphicon glyphicon-chevron-left" onClick={() => this.handleBack()} style={{fontSize:14,marginRight:5}}/>}
+                            {isMobile &&
+                            <span className="glyphicon glyphicon-chevron-left" onClick={() => this.handleBack()}
+                                  style={{fontSize: 14, marginRight: 5}}/>}
                             <a href={profileUrl}>{username}</a>,
                             {' ' + userObject.city.ro_name},
                             activ acum {moment.unix(userObject.last_active).fromNow()}
@@ -263,14 +243,18 @@ class UserMessages extends Component {
                         isReverse={true}
                         initialLoad={false}
                         loadMore={() => {
+                            console.log('load more')
                             this.loadMoreMessages(username);
                         }}
-                        hasMore={this.state.loadMoreMessages}
-                        threshold={10}
+                        hasMore={this.state.hasMoreItems && conversation.messagesPaginated.next_page_url !== null}
+                        threshold={5}
                         useWindow={false}
-                        loader={<ReactLoading className={'center-block loader-pad'} type={'spin'} color='#921090' height={'15%'} width={'15%'} />}>
-                        <span/>
-                        {this.renderMessages()}
+                        loader={<ReactLoading key={Math.floor(Math.random() * 999999999)}
+                                              className={'center-block loader-pad'} type={'spin'} color='#921090'
+                                              height={'10%'} width={'10%'}/>}>
+                        <div className="tracks">
+                            {this.renderMessages()}
+                        </div>
                     </InfiniteScroll>
                 </div>
                 <div>
@@ -282,8 +266,8 @@ class UserMessages extends Component {
                     scrollToBottom={this.scrollToBottom}
                     dropzoneConfig={{
                         autoProcessQueue: false,
-                        uploadMultiple:true,
-                        maxFiles:7,
+                        uploadMultiple: true,
+                        maxFiles: 7,
                         addRemoveLinks: true,
                         parallelUploads: 7,
                         params: {
@@ -311,7 +295,7 @@ const mapStateToProps = ({conversations, session}) => ({
 const mapDispatchToProps = dispatch =>
     bindActionCreators(
         {
-            fetchMessages,
+            fetchConversation,
             fetchMoreMessages,
             unreadConversation,
             fetchMoreMessagesWithoutDispatch,

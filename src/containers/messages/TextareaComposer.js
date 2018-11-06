@@ -7,12 +7,13 @@ import {stickersSoft, stickersHard} from './resources/stickers';
 import {push} from 'connected-react-router'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
+
 import {
     dispatchMessageLocal,
     sendMessage
 } from '../../modules/conversations/actions';
+
 import ModalBox from "../../containers/conversations/ModalBox";
-// import {Emoji} from 'emoji-mart'
 
 let componentConfig = {
     iconFiletypes: ['.jpg', '.png', '.gif'],
@@ -33,8 +34,8 @@ class TextareaComposer extends Component {
             showStickers: false,
             dropzoneObject: null,
             showUpload: false,
-            isSending: false,
             noPremiumModal: false,
+            sendingFailed: false,
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -145,18 +146,23 @@ class TextareaComposer extends Component {
             sender: senderId,
             receiver: receiverId
         };
-        if (message.length > 0 && receiverId !== null && this.state.isSending === false) {
+        if (message.length > 0 && receiverId !== null) {
             this.setState({
-                isSending: true,
                 message: '',
             });
             this.props.sendMessage(params).then((res) => {
-                this.setState({
-                    isSending: false
+                    this.props.scrollToBottom();
+                    this.textareaRef.focus();
+                    this.setState({
+                        sendingFailed: false,
+                    });
+                },
+                (err) => {
+                    console.log(err);
+                    this.setState({
+                        sendingFailed: true,
+                    });
                 });
-                this.props.scrollToBottom();
-                this.textareaRef.focus();
-            });
         }
     }
 
@@ -164,6 +170,7 @@ class TextareaComposer extends Component {
 
         return (
             <div>
+                {(this.state.sendingFailed) && <div style={{color:'red',fontSize:12,float:'right'}}>Message error...</div>}
                 <div className="message-box-chat">
 
                     <textarea

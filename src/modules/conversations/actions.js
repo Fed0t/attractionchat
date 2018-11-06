@@ -16,7 +16,8 @@ import {
     RESTORE_CONVERSATION,
     DESTROY_CONVERSATION,
     COUNT_UNREAD_CONVERSATIONS,
-    UNREAD_CONVERSATION
+    UNREAD_CONVERSATION,
+    FETCH_CONVERSATION
 } from './tags';
 
 import backendApi from '../../utils/Api';
@@ -146,9 +147,14 @@ export const fetchMoreTrashedConversations = (nextPage) => dispatch => {
     });
 };
 
-export const fetchMessages = (username) => dispatch => {
+export const fetchConversation = (username) => dispatch => {
     return backendApi.get(`/chat/conversation/getMessagesByUsername`, {params: {username: username}})
         .then(res => {
+            dispatch({
+                type: FETCH_CONVERSATION,
+                payload: res.data
+            });
+
             return res;
         });
 };

@@ -16,7 +16,8 @@ import {
     RESTORE_CONVERSATION,
     DESTROY_CONVERSATION,
     COUNT_UNREAD_CONVERSATIONS,
-    UNREAD_CONVERSATION
+    UNREAD_CONVERSATION,
+    FETCH_CONVERSATION
 } from './tags';
 import update from 'immutability-helper';
 import unionBy from 'lodash/unionBy';
@@ -77,7 +78,7 @@ export default (state = initialState, action) => {
         case FETCH_MORE_CONVERSATIONS:
             return update(state, {
                 valid: {
-                    list: {$set: state.valid.list.concat(action.payload.data)},
+                    list: {$set: merge(state.valid.list,action.payload.data,'id')},
                     next_page_url: {$set: action.payload.next_page_url}
                 }
             });
@@ -92,7 +93,7 @@ export default (state = initialState, action) => {
         case FETCH_MORE_UNREADED_CONVERSATIONS:
             return update(state, {
                 unread: {
-                    list: {$set: state.unread.list.concat(action.payload.data)},
+                    list: {$set: merge(state.unread.list,action.payload.data,'id')},
                     next_page_url: {$set: action.payload.next_page_url}
                 }
             });
@@ -107,7 +108,7 @@ export default (state = initialState, action) => {
         case FETCH_MORE_SEARCH_CONVERSATIONS:
             return update(state, {
                 search: {
-                    list: {$set: state.search.list.concat(action.payload.data)},
+                    list: {$set: merge(state.search.list,action.payload.data,'id')},
                     next_page_url: {$set: action.payload.next_page_url}
                 }
             });
@@ -126,6 +127,13 @@ export default (state = initialState, action) => {
                     next_page_url: {$set: action.payload.next_page_url}
                 }
             });
+
+        case FETCH_CONVERSATION:
+            return update(state,{
+                valid: {
+                    list: {$set: state.valid.list.concat(action.payload)},
+                }
+            });
         case RECEIVE_MESSAGE:
 
             let message = copy(action.payload);
@@ -138,6 +146,7 @@ export default (state = initialState, action) => {
             let isReaded = 0;
             let result = null;
 
+            //ARHIVATE DACA CONV EXISTA
             conversationIndex = findIndex(state.archived.list, {recipient_id: conversation.recipient_id});
             if (conversationIndex !== -1) {
                 listName = 'archived';
@@ -164,7 +173,7 @@ export default (state = initialState, action) => {
                     }
                 });
             }
-
+            //SEARCH DACA CONV EXISTA
             conversationIndex = findIndex(state.search.list, {recipient_id: conversation.recipient_id});
             if (conversationIndex !== -1) {
                 listName = 'search';
@@ -193,7 +202,7 @@ export default (state = initialState, action) => {
             }
 
 
-
+            //NECITITE DACA CONV EXISTA
             conversationIndex = findIndex(state.unread.list, {recipient_id: conversation.recipient_id});
             if (conversationIndex !== -1) {
                 listName = 'unread';
@@ -596,4 +605,26 @@ export default (state = initialState, action) => {
         default:
             return state
     }
+}
+
+function merge(a, b, key) {
+
+    function x(a) {
+        a.forEach(function (b) {
+            if (!(b[key] in obj)) {
+                obj[b[key]] = obj[b[key]] || {};
+                array.push(obj[b[key]]);
+            }
+            Object.keys(b).forEach(function (k) {
+                obj[b[key]][k] = b[k];
+            });
+        });
+    }
+
+    var array = [],
+        obj = {};
+
+    x(a);
+    x(b);
+    return array;
 }

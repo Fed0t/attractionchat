@@ -9,6 +9,9 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import ModalBox from "./ModalBox";
 import UndefinedUser from '../../utils/UndefinedUser';
 import ReactLoading from 'react-loading';
+import {
+    isMobile
+} from "react-device-detect";
 
 import {
     isTypingReset,
@@ -73,7 +76,7 @@ class ActiveConversations extends Component {
     }
 
     redirectToFirstConversation(username) {
-        if (!this.state.redirected && this.state.username.length <= 1) {
+        if (!this.state.redirected && this.state.username.length <= 1 && !isMobile) {
             this.setState({
                 redirected: true
             });
@@ -183,7 +186,7 @@ class ActiveConversations extends Component {
                             hasMore={(conversations.next_page_url)}
                             height={440}
                             useWindow={false}
-                            loader={<h4 className="text-center">Loading...</h4>}
+                            loader={<ReactLoading className={'center-block loader-pad'} type={'spin'} color='#921090' height={'15%'} width={'15%'} />}
                             pullDownToRefresh
                             pullDownToRefreshContent={
                                 <h3 style={{textAlign: 'center', color: '#FFF'}}>&#8595; Pull down to refresh</h3>
@@ -194,7 +197,9 @@ class ActiveConversations extends Component {
                             refreshFunction={() => {
                                 this.refreshConversations();
                             }}>
-                            {this.renderConversations()}
+                            <div className="list">
+                                {this.renderConversations()}
+                            </div>
                         </InfiniteScroll>
                 </ReactCSSTransitionGroup>
 
