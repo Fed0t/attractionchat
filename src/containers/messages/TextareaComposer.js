@@ -16,7 +16,7 @@ import {
 import ModalBox from "../../containers/conversations/ModalBox";
 
 let componentConfig = {
-    iconFiletypes: ['.jpg', '.png', '.gif'],
+    iconFiletypes: ['.jpg', '.png', '.gif', '.mp4','.avi'],
     showFiletypeIcon: true,
     postUrl: 'https://app.attractionclub.ro/api/v1/chat/send',
 };
@@ -170,7 +170,8 @@ class TextareaComposer extends Component {
 
         return (
             <div>
-                {(this.state.sendingFailed) && <div style={{color:'red',fontSize:12,float:'right'}}>Message error...</div>}
+                {(this.state.sendingFailed) &&
+                <div style={{color: 'red', fontSize: 12, float: 'right'}}>Message error...</div>}
                 <div className="message-box-chat">
 
                     <textarea
@@ -288,20 +289,21 @@ class TextareaComposer extends Component {
                                   noPremiumModal: false
                               });
                           }}
-                          size={'large'}
-                          yesButton={<Button bsStyle="danger" onClick={() => {
+                          size={'sm'}
+                          yesButton={<Button bsStyle="primary" onClick={() => {
                               this.props.history.push('/subscription')
                           }}>
                               DA
                           </Button>}
-                          noButton={<Button bsStyle="primary" onClick={() => {
-                              this.setState({
-                                  noPremiumModal: false
-                              });
-                          }}>Mai tarziu</Button>}
-                          title={<div style={{color: '#FFF'}}>DEVINO PREMIUM?</div>}
-                          body={<div style={{color: '#FFF', fontSize: 20}}>Imi pare rau dar nu esti PREMIUM!
-                              <strong><a style={{color: 'red'}} href="/subscription"> MEMBRU PREMIUM!</a></strong>
+                          noButton={<a href="/subscription">
+                              <Button bsStyle="danger">DEVINO PREMIUM</Button>
+                          </a>}
+                          title={<div style={{color: '#FFF'}}>DEVINO PREMIUM</div>}
+                          body={<div style={{color: '#FFF', fontSize: 20}}>Imi pare rau dar nu esti PREMIUM! Acceseaza pagina de abonamente pentru mai multe detalii
+                              <strong><a style={{color: 'red'}} href="/subscription">
+                                  <img className="img-responsive" src={require('../../assets/abonamente.png')} alt=""/>
+                              </a>
+                              </strong>
                           </div>}
                           actionButton={() => {
                               console.log('subscription')

@@ -21,6 +21,7 @@ import {
 } from './tags';
 import update from 'immutability-helper';
 import unionBy from 'lodash/unionBy';
+import uniqBy from 'lodash/uniqBy';
 import findIndex from 'lodash/findIndex';
 import {copy} from '../../utils/Utils';
 
@@ -28,11 +29,13 @@ update.extend('$concat', function (messages, originalMessages) {
     return unionBy(originalMessages, messages, "message_id");
 });
 
-// update.extend('$unset', function(keysToRemove, original) {
-//     let copy = Object.assign({}, original);
-//     for (const key of keysToRemove) delete copy[key]
-//     return copy
-// });
+Object.defineProperty(Array.prototype, 'precat', {
+    configurable: true,
+    writable: true,
+    value: function precat() {
+        return Array.prototype.concat.call([], ...arguments, this)
+    }
+});
 
 const moveFirstToHead = ([head, ...tail], predicate, accumulator = []) =>
     (predicate.call(null, head)) ?
@@ -156,7 +159,10 @@ export default (state = initialState, action) => {
                         list: {
                             [conversationIndex]: {
                                 messagesPaginated: {
-                                    data: {$unshift: [message]},
+                                    data: {$apply: function (messages) {
+                                        let merged = messages.precat([message]);
+                                        return uniqBy(merged,'id');
+                                    }},
                                 },
                                 readed: {$set: (payload.message.user.id === conversation.sender.id) ? 1 : 0},
                                 messages: {$set: [message]}
@@ -183,7 +189,10 @@ export default (state = initialState, action) => {
                         list: {
                             [conversationIndex]: {
                                 messagesPaginated: {
-                                    data: {$unshift: [message]},
+                                    data: {$apply: function (messages) {
+                                        let merged = messages.precat([message]);
+                                        return uniqBy(merged,'id');
+                                    }},
                                 },
                                 readed: {$set: (payload.message.user.id === conversation.sender.id) ? 1 : 0},
                                 messages: {$set: [message]}
@@ -212,7 +221,10 @@ export default (state = initialState, action) => {
                         list: {
                             [conversationIndex]: {
                                 messagesPaginated: {
-                                    data: {$unshift: [message]},
+                                    data: {$apply: function (messages) {
+                                        let merged = messages.precat([message]);
+                                        return uniqBy(merged,'id');
+                                    }},
                                 },
                                 readed: {$set: (payload.message.user.id === conversation.sender.id) ? 1 : 0},
                                 messages: {$set: [message]}
@@ -256,7 +268,10 @@ export default (state = initialState, action) => {
                         list: {
                             [conversationIndex]: {
                                 messagesPaginated: {
-                                    data: {$unshift: [message]},
+                                    data: {$apply: function (messages) {
+                                        let merged = messages.precat([message]);
+                                        return uniqBy(merged,'id');
+                                    }},
                                 },
                                 readed: {$set: (payload.message.user.id === conversation.sender.id) ? 1 : 0},
                                 messages: {$set: [message]}

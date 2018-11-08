@@ -1,5 +1,5 @@
-import React,{Component} from 'react';
-import {Modal,Button} from 'react-bootstrap';
+import React, {Component} from 'react';
+import {Modal, Button} from 'react-bootstrap';
 import PropTypes from "prop-types";
 
 class ModalBox extends Component {
@@ -7,7 +7,7 @@ class ModalBox extends Component {
     render() {
         let bsSize = 'small';
 
-        if(this.props.size){
+        if (this.props.size) {
             bsSize = this.props.size;
         }
 
@@ -20,27 +20,27 @@ class ModalBox extends Component {
             <Button bsStyle="primary" onClick={this.props.closeModal}>Mai tarziu</Button>
         );
 
-        if(this.props.yesButton) {
+        if (this.props.yesButton) {
             yesButton = this.props.yesButton
         }
 
-        if(this.props.noButton) {
+        if (this.props.noButton) {
             noButton = this.props.noButton
         }
 
         return (
             <div>
-                <Modal show={this.props.show} onHide={this.props.closeModal} bsSize={bsSize} >
-                        <Modal.Header closeButton style={{ backgroundColor: '#960094e0',color:'#FFF'}}>
-                            <Modal.Title>{this.props.title}</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{ backgroundColor: '#960094e0'}}>
-                            {this.props.body}
-                        </Modal.Body>
-                        <Modal.Footer style={{ backgroundColor: '#960094e0',color:'#FFF',marginTop:0}}>
-                            {yesButton}
-                            {noButton}
-                        </Modal.Footer>
+                <Modal show={this.props.show} onHide={this.props.closeModal} bsSize={bsSize}>
+                    <Modal.Header closeButton style={{backgroundColor: '#960094e0', opacity: 0.9, color: '#FFF'}}>
+                        <Modal.Title>{this.props.title}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body style={{backgroundColor: '#960094e0'}}>
+                        {this.props.body}
+                    </Modal.Body>
+                    <Modal.Footer style={{backgroundColor: '#960094e0', color: '#FFF', marginTop: 0}}>
+                        {yesButton}
+                        {noButton}
+                    </Modal.Footer>
 
                 </Modal>
             </div>
@@ -50,12 +50,12 @@ class ModalBox extends Component {
 
 ModalBox.propTypes = {
     show: PropTypes.bool,
-    closeModal:PropTypes.func,
-    actionButton:PropTypes.func,
-    body:PropTypes.element,
-    title:PropTypes.element,
-    yesButton:PropTypes.element,
-    noButton:PropTypes.element,
+    closeModal: PropTypes.func,
+    actionButton: PropTypes.func,
+    body: PropTypes.element,
+    title: PropTypes.element,
+    yesButton: PropTypes.element,
+    noButton: PropTypes.element,
 };
 
 export default (ModalBox);

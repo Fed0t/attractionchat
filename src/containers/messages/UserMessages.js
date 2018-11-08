@@ -181,6 +181,7 @@ class UserMessages extends Component {
                             key={message.message_id}
                             text={message.message.message}
                             images={message.message.images}
+                            videos={message.message.videos}
                             location={message.message.location}
                             isRight={(Number(message.message.user.id) === Number(this.props.session.user_id))}
                             timestamp={message.message.sent}

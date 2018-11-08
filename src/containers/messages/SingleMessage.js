@@ -6,6 +6,7 @@ import Gallery from './Gallery';
 // import Linkify from 'react-linkify';
 // import {emojiTextParser} from '../../utils/Utils';
 import renderHTML from 'react-render-html';
+import ReactPlayer from 'react-player';
 
 let stickersRegex = '';
 stickersSoft.concat(stickersHard).forEach((sticker) => {
@@ -25,6 +26,7 @@ const SingleMessage = (props) => {
 
     let imageSource = '';
     let stickerSource = '';
+    let videoSource = '';
     let mapsLink = '';
 
     if (props.images.length > 0) {
@@ -44,6 +46,15 @@ const SingleMessage = (props) => {
         }
         imageSource = <Gallery
             images={imagesSources}/>
+    }
+
+    if (props.videos.length > 0) {
+        let videoParse = JSON.parse(props.videos);
+        if(videoParse.length > 0){
+            let parsedVideo = videoParse[0];
+            videoSource = <ReactPlayer width={200} controls={true} url={'https://app.attractionclub.ro/storage' + parsedVideo.path + '/' + parsedVideo.id}/>;
+        }
+
     }
 
     if (props.location.length > 0) {
@@ -132,6 +143,7 @@ const SingleMessage = (props) => {
                         </div>
                         {mapsLink}
                         {imageSource}
+                        {videoSource}
                         {stickerSource}
                         {(props.isReaded === 1) &&
                         <span className="pull-right message-seen"> Seen <span className="glyphicon glyphicon-ok"/></span>}
@@ -150,7 +162,7 @@ const SingleMessage = (props) => {
                             <div className="h5-msg" style={{padding: 5, fontSize: 15}}>
                                 {message}
                             </div>
-
+                            {videoSource}
                             {mapsLink}
                             {imageSource}
                             {stickerSource}

@@ -66,6 +66,7 @@
     "react-loading": "^2.0.3",
     "react-moment": "^0.8.1",
     "react-motion": "^0.5.2",
+    "react-player": "^1.6.6",
     "react-redux": "5.0.7",
     "react-render-html": "^0.6.0",
     "react-router": "4.3.1",
