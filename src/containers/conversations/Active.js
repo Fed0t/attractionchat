@@ -106,7 +106,7 @@ class ActiveConversations extends Component {
         let renderedConversations = [];
         if (this.props.list.list.length > 0) {
             this.props.list.list.forEach((conversation) => {
-                let message = conversation.messages[0].message;
+                let message = conversation.messages[0] ? conversation.messages[0].message : {}
                 let isYou = false;
                 let isTyping = false;
 
@@ -125,40 +125,43 @@ class ActiveConversations extends Component {
                     }.bind(this), 3500)
                 }
 
-                renderedConversations.push(<ReactCSSTransitionGroup
-                    transitionName="example"
-                    transitionAppear={true}
-                    transitionAppearTimeout={500}
-                    transitionEnter={false}
-                    key={conversation.id}
-                    transitionEnterTimeout={500}
-                    transitionLeaveTimeout={300}>
-                    <SingleConversation
-                        isReaded={conversation.readed === 1}
-                        isArchived={false}
-                        message={message}
-                        isSearch={false}
-                        isTyping={isTyping}
-                        isYou={isYou}
-                        images={conversation.messages[0].message.images || htmlRegex.test(message)}
-                        location={(conversation.messages[0].message.location && conversation.messages[0].message.location !== 0)}
-                        user={{
-                            username: conversation.receiver.username,
-                            userId: conversation.receiver.id,
-                            avatarUrl: conversation.receiver.avatar_url
-                        }}
-                        updatedAt={conversation.updated_at}
-                        open={() => {
-                            this.props.changePage({
-                                pathname: this.props.basename + '/t/' + conversation.receiver.username,
-                                search: this.props.location.search
-                            });
-                        }}
-                        archive={() => {
-                            this.toggleArchiveModal(conversation);
-                        }}
-                    />
-                </ReactCSSTransitionGroup>);
+                let imagesArray = [];
+
+                    renderedConversations.push(<ReactCSSTransitionGroup
+                        transitionName="example"
+                        transitionAppear={true}
+                        transitionAppearTimeout={500}
+                        transitionEnter={false}
+                        key={conversation.id}
+                        transitionEnterTimeout={500}
+                        transitionLeaveTimeout={300}>
+                        <SingleConversation
+                            isReaded={conversation.readed === 1}
+                            isArchived={false}
+                            message={message}
+                            isSearch={false}
+                            isTyping={isTyping}
+                            isYou={isYou}
+                            images={message.images || htmlRegex.test(message)}
+                            location={(message.location && message.location !== 0)}
+                            user={{
+                                username: conversation.receiver.username,
+                                userId: conversation.receiver.id,
+                                avatarUrl: conversation.receiver.avatar_url
+                            }}
+                            updatedAt={conversation.updated_at}
+                            open={() => {
+                                this.props.changePage({
+                                    pathname: this.props.basename + '/t/' + conversation.receiver.username,
+                                    search: this.props.location.search
+                                });
+                            }}
+                            archive={() => {
+                                this.toggleArchiveModal(conversation);
+                            }}
+                        />
+                    </ReactCSSTransitionGroup>);
+
             });
             return renderedConversations;
         }

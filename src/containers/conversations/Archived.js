@@ -80,7 +80,7 @@ class ArchivedConversations extends Component {
         let renderedConversations = [];
         if (this.props.list.list.length > 0) {
             this.props.list.list.forEach((conversation) => {
-                let message = conversation.messages[0].message;
+                let message = conversation.messages[0] ? conversation.messages[0].message : {}
 
                 let isYou = false;
                 if (message && message.user && (Number(this.props.session.user_id) === message.user.id)) {
