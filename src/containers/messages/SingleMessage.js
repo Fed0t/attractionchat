@@ -168,7 +168,7 @@ const SingleMessage = props => {
   }
 
   if (stickersRegex.test(props.text)) {
-    let stickerImage = stickersSoft.concat(stickersHard).filter(function(item) {
+    let stickerImage = stickersSoft.concat(stickersHard).filter(function (item) {
       return item.name === props.text.match(stickersRegex)[0]
     })
     stickerSource = <img src={stickerImage[0].code} alt="" />
@@ -211,7 +211,7 @@ const SingleMessage = props => {
   }
 
   return (
-    <Linkify>
+    <Linkify properties={{ target: '_blank' }}>
       <div
         className="blockquote-box-mesaj clearfix"
         title={moment.unix(props.timestamp).format('HH:mm')}
@@ -231,31 +231,31 @@ const SingleMessage = props => {
             )}
           </div>
         ) : (
-          <div
-            className="square-mesaj"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start'
-            }}>
-            <img
-              alt={props.user.username}
-              className={'img-circle'}
-              src={props.user.avatar_url}
-              style={{ height: 40, width: 40 }}
-            />
+            <div
+              className="square-mesaj"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start'
+              }}>
+              <img
+                alt={props.user.username}
+                className={'img-circle'}
+                src={props.user.avatar_url}
+                style={{ height: 40, width: 40 }}
+              />
 
-            <div className="bubble1-mesaje bubble1-msg">
-              <div className="h5-msg" style={{ padding: 5, fontSize: 15 }}>
-                {message}
+              <div className="bubble1-mesaje bubble1-msg">
+                <div className="h5-msg" style={{ padding: 5, fontSize: 15 }}>
+                  {message}
+                </div>
+                {videoSource}
+                {mapsLink}
+                {imageSource}
+                {stickerSource}
               </div>
-              {videoSource}
-              {mapsLink}
-              {imageSource}
-              {stickerSource}
             </div>
-          </div>
-        )}
+          )}
       </div>
     </Linkify>
   )

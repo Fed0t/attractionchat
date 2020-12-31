@@ -1,8 +1,8 @@
-import React, {Component} from "react";
-import {push} from 'connected-react-router'
-import {bindActionCreators} from 'redux'
-import {connect} from 'react-redux'
-import {withRouter} from 'react-router-dom'
+import React, { Component } from "react";
+import { push } from 'connected-react-router'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import SingleConversation from "./SingleConversation";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -33,8 +33,8 @@ class ActiveConversations extends Component {
             conversationUser: 'default',
             username: this.props.location.pathname.split(/[/ ]+/).pop(),
             redirected: false,
-            refreshing:false,
-            loading:true
+            refreshing: false,
+            loading: true
         };
 
         this.isTypingTimeout = null;
@@ -49,7 +49,7 @@ class ActiveConversations extends Component {
         let that = this;
         this.props.fetchConversations().then((res) => {
             this.setState({
-                loading:false
+                loading: false
             });
             res.data.data.forEach(function (conversation) {
                 if (conversation.readed === 1) {
@@ -60,13 +60,13 @@ class ActiveConversations extends Component {
 
     }
 
-    refreshConversations(){
+    refreshConversations() {
         this.setState({
-            refreshing:true
+            refreshing: true
         });
         this.props.fetchConversations().then((res) => {
             this.setState({
-                refreshing:false
+                refreshing: false
             });
         });
     }
@@ -125,42 +125,40 @@ class ActiveConversations extends Component {
                     }.bind(this), 3500)
                 }
 
-                let imagesArray = [];
-
-                    renderedConversations.push(<ReactCSSTransitionGroup
-                        transitionName="example"
-                        transitionAppear={true}
-                        transitionAppearTimeout={500}
-                        transitionEnter={false}
-                        key={conversation.id}
-                        transitionEnterTimeout={500}
-                        transitionLeaveTimeout={300}>
-                        <SingleConversation
-                            isReaded={conversation.readed === 1}
-                            isArchived={false}
-                            message={message}
-                            isSearch={false}
-                            isTyping={isTyping}
-                            isYou={isYou}
-                            images={message.images || htmlRegex.test(message)}
-                            location={(message.location && message.location !== 0)}
-                            user={{
-                                username: conversation.receiver.username,
-                                userId: conversation.receiver.id,
-                                avatarUrl: conversation.receiver.avatar_url
-                            }}
-                            updatedAt={conversation.updated_at}
-                            open={() => {
-                                this.props.changePage({
-                                    pathname: this.props.basename + '/t/' + conversation.receiver.username,
-                                    search: this.props.location.search
-                                });
-                            }}
-                            archive={() => {
-                                this.toggleArchiveModal(conversation);
-                            }}
-                        />
-                    </ReactCSSTransitionGroup>);
+                renderedConversations.push(<ReactCSSTransitionGroup
+                    transitionName="example"
+                    transitionAppear={true}
+                    transitionAppearTimeout={500}
+                    transitionEnter={false}
+                    key={conversation.id}
+                    transitionEnterTimeout={500}
+                    transitionLeaveTimeout={300}>
+                    <SingleConversation
+                        isReaded={conversation.readed === 1}
+                        isArchived={false}
+                        message={message}
+                        isSearch={false}
+                        isTyping={isTyping}
+                        isYou={isYou}
+                        images={message.images || htmlRegex.test(message)}
+                        location={(message.location && message.location !== 0)}
+                        user={{
+                            username: conversation.receiver.username,
+                            userId: conversation.receiver.id,
+                            avatarUrl: conversation.receiver.avatar_url
+                        }}
+                        updatedAt={conversation.updated_at}
+                        open={() => {
+                            this.props.changePage({
+                                pathname: this.props.basename + '/t/' + conversation.receiver.username,
+                                search: this.props.location.search
+                            });
+                        }}
+                        archive={() => {
+                            this.toggleArchiveModal(conversation);
+                        }}
+                    />
+                </ReactCSSTransitionGroup>);
 
             });
             return renderedConversations;
@@ -170,7 +168,7 @@ class ActiveConversations extends Component {
     render() {
         let conversations = this.props.list;
 
-        if( (this.state.loading && conversations.list.length === 0) || this.state.refreshing){
+        if ((this.state.loading && conversations.list.length === 0) || this.state.refreshing) {
             return <ReactLoading className={'center-block loader-pad'} type={'spin'} color='#921090' height={'15%'} width={'15%'} />
         }
 
@@ -183,46 +181,46 @@ class ActiveConversations extends Component {
                     transitionEnter={false}
                     transitionEnterTimeout={500}
                     transitionLeaveTimeout={300}>
-                        <InfiniteScroll
-                            dataLength={conversations.list.length}
-                            next={() => this.props.fetchMoreConversations(conversations.next_page_url)}
-                            hasMore={(conversations.next_page_url)}
-                            height={440}
-                            useWindow={false}
-                            loader={<ReactLoading className={'center-block loader-pad'} type={'spin'} color='#921090' height={'15%'} width={'15%'} />}
-                            pullDownToRefresh
-                            pullDownToRefreshContent={
-                                <h3 style={{textAlign: 'center', color: '#FFF'}}>&#8595; Pull down to refresh</h3>
-                            }
-                            releaseToRefreshContent={
-                                <h3 style={{textAlign: 'center', color: '#FFF'}}>&#8593; Release to refresh</h3>
-                            }
-                            refreshFunction={() => {
-                                this.refreshConversations();
-                            }}>
-                            <div className="list">
-                                {this.renderConversations()}
-                            </div>
-                        </InfiniteScroll>
+                    <InfiniteScroll
+                        dataLength={conversations.list.length}
+                        next={() => this.props.fetchMoreConversations(conversations.next_page_url)}
+                        hasMore={(conversations.next_page_url)}
+                        height={440}
+                        useWindow={false}
+                        loader={<ReactLoading className={'center-block loader-pad'} type={'spin'} color='#921090' height={'15%'} width={'15%'} />}
+                        pullDownToRefresh
+                        pullDownToRefreshContent={
+                            <h3 style={{ textAlign: 'center', color: '#FFF' }}>&#8595; Pull down to refresh</h3>
+                        }
+                        releaseToRefreshContent={
+                            <h3 style={{ textAlign: 'center', color: '#FFF' }}>&#8593; Release to refresh</h3>
+                        }
+                        refreshFunction={() => {
+                            this.refreshConversations();
+                        }}>
+                        <div className="list">
+                            {this.renderConversations()}
+                        </div>
+                    </InfiniteScroll>
                 </ReactCSSTransitionGroup>
 
                 <ModalBox show={this.state.showModalArchive}
-                          closeModal={() => {
-                              this.setState({
-                                  showModalArchive: false
-                              });
-                          }}
-                          title={<div style={{color: '#FFF'}}>Arhiveaza conversatia?</div>}
-                          body={<div style={{color: '#FFF'}}>Doresti sa arhivezi conversatia cu
+                    closeModal={() => {
+                        this.setState({
+                            showModalArchive: false
+                        });
+                    }}
+                    title={<div style={{ color: '#FFF' }}>Arhiveaza conversatia?</div>}
+                    body={<div style={{ color: '#FFF' }}>Doresti sa arhivezi conversatia cu
                               <strong> {this.state.conversationUser.username}</strong>?</div>}
-                          actionButton={this.archiveConversation}/>
+                    actionButton={this.archiveConversation} />
             </div>
         )
     }
 }
 
 
-const mapStateToProps = ({conversations, session}) => ({
+const mapStateToProps = ({ conversations, session }) => ({
     list: conversations.valid,
     session: session
 });
