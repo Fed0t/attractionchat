@@ -79,7 +79,7 @@ class ChatComponent extends Component {
         this.timeoutCount = setTimeout(function () {
             this.props.countUnreadConversations();
             this.getCount();
-        }.bind(this), 1000)
+        }.bind(this), 20000)
     }
 
     collapseMobileMessages() {

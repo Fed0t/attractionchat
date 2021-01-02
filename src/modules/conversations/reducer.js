@@ -267,7 +267,6 @@ export default (state = initialState, action) => {
 
             conversationIndex = findIndex(state.valid.list, { recipient_id: conversation.recipient_id });
             if (conversationIndex !== -1) {
-                console.log(payload.message, conversation);
                 listName = 'valid';
                 isReaded = state[listName].list[conversationIndex].readed;
                 receiveMessageState = update(receiveMessageState, {
@@ -287,9 +286,9 @@ export default (state = initialState, action) => {
                             }
                         }
                     },
-                    // stats: {
-                    //     unread_count: {$set: (payload.message.user.id !== conversation.sender.id) ? (state.stats.unread_count + 1) : state.stats.unread_count}
-                    // }
+                    stats: {
+                        unread_count: {$set: (payload.message.user.id !== conversation.sender.id) ? (state.stats.unread_count + 1) : state.stats.unread_count}
+                    }
                 });
 
                 result = moveFirstToHead(receiveMessageState.valid.list, element => {
