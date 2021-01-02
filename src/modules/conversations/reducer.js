@@ -278,9 +278,9 @@ export default (state = initialState, action) => {
                             }
                         }
                     },
-                    stats: {
-                        unread_count: {$set: (payload.message.user.id === conversation.sender.id) ? (state.stats.unread_count + 1) : state.stats.unread_count}
-                    }
+                    // stats: {
+                    //     unread_count: {$set: (payload.message.user.id !== conversation.sender.id) ? (state.stats.unread_count + 1) : state.stats.unread_count}
+                    // }
                 });
 
                 result = moveFirstToHead(receiveMessageState.valid.list, element => {

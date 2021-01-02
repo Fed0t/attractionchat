@@ -54,6 +54,7 @@ class ChatComponent extends Component {
     componentWillUnmount() {
         clearTimeout(this.delayTimer);
         clearTimeout(this.timeoutScroll);
+        clearTimeout(this.timeoutCount);
     }
 
 
@@ -76,6 +77,7 @@ class ChatComponent extends Component {
     getCount() {
         clearTimeout(this.timeoutCount);
         this.timeoutCount = setTimeout(function () {
+            console.log('este');
             this.props.countUnreadConversations();
         }.bind(this), 1000)
     }
