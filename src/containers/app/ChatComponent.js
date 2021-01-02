@@ -1,8 +1,8 @@
-import React, {Component} from "react";
-import {Route, NavLink, Switch, withRouter} from 'react-router-dom'
-import {push} from 'connected-react-router'
-import {bindActionCreators} from 'redux'
-import {connect} from 'react-redux'
+import React, { Component } from "react";
+import { Route, NavLink, Switch, withRouter } from 'react-router-dom'
+import { push } from 'connected-react-router'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import ActiveConversations from "../conversations/Active";
 import UnreadConversations from "../conversations/Unread";
 import ArchivedConversations from "../conversations/Archived";
@@ -31,12 +31,13 @@ class ChatComponent extends Component {
             searchResult: [],
             searching: true,
             scrollPosition: 0,
-            messagesCollapsed:false
+            messagesCollapsed: false
         };
 
         this.delayTimer = null;
         this.container = null;
         this.timeoutScroll = null;
+        this.timeoutCount = null;
     }
 
     componentWillMount() {
@@ -47,12 +48,14 @@ class ChatComponent extends Component {
         }
 
         this.props.countUnreadConversations();
+        this.getCount();
     }
 
     componentWillUnmount() {
         clearTimeout(this.delayTimer);
         clearTimeout(this.timeoutScroll);
     }
+
 
     componentDidUpdate() {
         if (this.state.checked && this.props.location.search.length === 0) {
@@ -70,24 +73,31 @@ class ChatComponent extends Component {
         }
     }
 
-    collapseMobileMessages(){
-        if(isMobile && !isTablet && this.collapseRef){
-            if(this.state.messagesCollapsed === false){
+    getCount() {
+        clearTimeout(this.timeoutCount);
+        this.timeoutCount = setTimeout(function () {
+            this.props.countUnreadConversations();
+        }.bind(this), 1000)
+    }
+
+    collapseMobileMessages() {
+        if (isMobile && !isTablet && this.collapseRef) {
+            if (this.state.messagesCollapsed === false) {
                 this.collapseRef.classList.add('show');
                 this.setState({
-                    messagesCollapsed:true
+                    messagesCollapsed: true
                 });
-            }else{
+            } else {
                 this.collapseRef.classList.remove('show');
                 this.setState({
-                    messagesCollapsed:false
+                    messagesCollapsed: false
                 });
             }
         }
     }
 
     handleCheck() {
-        this.setState({checked: !this.state.checked});
+        this.setState({ checked: !this.state.checked });
         if (!this.state.checked) {
             this.props.history.push({
                 pathname: this.props.location.pathname,
@@ -134,22 +144,22 @@ class ChatComponent extends Component {
         let messageBox = (
             <Switch>
                 <Route path={`${basename}/t/:username`} render={(props) => {
-                    return <UserMessages {...props}/>
-                }}/>
+                    return <UserMessages {...props} />
+                }} />
                 <Route path={`${basename}/archived/t/:username`} render={(props) => {
-                    return <UserMessages {...props}/>
-                }}/>
-                <Route path={`${basename}/t`} component={SplashMessagesBox}/>
-                <Route path={`${basename}/archived/t`} component={SplashMessagesBox}/>
+                    return <UserMessages {...props} />
+                }} />
+                <Route path={`${basename}/t`} component={SplashMessagesBox} />
+                <Route path={`${basename}/archived/t`} component={SplashMessagesBox} />
             </Switch>
         );
 
         return (
             <div className="row">
-                <div className="col-lg-5 col-xs-12 col-md-5 div-row-marketing messages-box" style={(isMobile) ? {paddingRight:5,paddingLeft:5} : {paddingRight:2}}>
+                <div className="col-lg-5 col-xs-12 col-md-5 div-row-marketing messages-box" style={(isMobile) ? { paddingRight: 5, paddingLeft: 5 } : { paddingRight: 2 }}>
                     <ul className="nav1">
-                        <div className="row-mesaje" style={{marginLeft: -2}}>
-                            <ul className="tabs" style={{position: 'relative'}}>
+                        <div className="row-mesaje" style={{ marginLeft: -2 }}>
+                            <ul className="tabs" style={{ position: 'relative' }}>
 
                                 <NavLink exact={true} activeClassName='is-active' to={{
                                     pathname: basename + '/t/' + this.state.username,
@@ -166,35 +176,35 @@ class ChatComponent extends Component {
                                 return (
                                     <div>
                                         <div className={'messages-unread-btn'}>
-                                            <span style={{marginRight: 5, fontSize: 13}}>
+                                            <span style={{ marginRight: 5, fontSize: 13 }}>
                                                 {this.props.stats.unread_count > 0 && <span
                                                     className="badge red-badge">{this.props.stats.unread_count}</span>}
                                                 Mesaje necitite </span>
 
-                                            <input style={{padding: 2, marginTop: 2}} type="checkbox"
-                                                   onChange={this.handleCheck.bind(this)}
-                                                   defaultChecked={this.state.checked}/>
+                                            <input style={{ padding: 2, marginTop: 2 }} type="checkbox"
+                                                onChange={this.handleCheck.bind(this)}
+                                                defaultChecked={this.state.checked} />
                                         </div>
                                     </div>
                                 )
-                            }}/>
+                            }} />
                         </div>
                         <div className="row-orasul">
                             <div className="input-group">
                                 <input id="search-c"
-                                       type="text"
-                                       style={{zIndex: 0}}
-                                       className="form-control placeholder"
-                                       placeholder="Caută" value={this.state.search}
-                                       onChange={(e) => {
-                                           this.doSearch(e.target.value)
-                                       }}/>
+                                    type="text"
+                                    style={{ zIndex: 0 }}
+                                    className="form-control placeholder"
+                                    placeholder="Caută" value={this.state.search}
+                                    onChange={(e) => {
+                                        this.doSearch(e.target.value)
+                                    }} />
 
                                 <div className="input-group-btn">
                                     <button id="cancel-search-c" type="button"
-                                            onClick={this.resetSearch.bind(this)}
-                                            className="btn btn-default dropdown-toggle">
-                                        <span className="glyphicon glyphicon-remove"/>
+                                        onClick={this.resetSearch.bind(this)}
+                                        className="btn btn-default dropdown-toggle">
+                                        <span className="glyphicon glyphicon-remove" />
                                     </button>
                                 </div>
                             </div>
@@ -215,30 +225,30 @@ class ChatComponent extends Component {
                                 id="conversations-list">
 
                                 {(this.state.search.length > 0) ?
-                                    <SearchConversations basename={basename} searching={this.state.searching}/>
+                                    <SearchConversations basename={basename} searching={this.state.searching} />
                                     :
                                     <Switch>
                                         <Route path={`${basename}/t`}
-                                               render={(props) => {
-                                                   if (this.state.checked) {
-                                                       return <UnreadConversations
-                                                           keepScroll={() => {
-                                                               if (this.container) {
-                                                                   this.container.scrollTop = this.state.scrollPosition
-                                                               }
-                                                           }}
-                                                           basename={basename}
-                                                           type={'unread'} {...props}/>
-                                                   } else {
-                                                       return <ActiveConversations basename={basename}
-                                                                                   collapse={this.collapseMobileMessages}
-                                                                                   type={'valid'} {...props}/>
-                                                   }
-                                               }}/>
+                                            render={(props) => {
+                                                if (this.state.checked) {
+                                                    return <UnreadConversations
+                                                        keepScroll={() => {
+                                                            if (this.container) {
+                                                                this.container.scrollTop = this.state.scrollPosition
+                                                            }
+                                                        }}
+                                                        basename={basename}
+                                                        type={'unread'} {...props} />
+                                                } else {
+                                                    return <ActiveConversations basename={basename}
+                                                        collapse={this.collapseMobileMessages}
+                                                        type={'valid'} {...props} />
+                                                }
+                                            }} />
 
                                         <Route path={`${basename}/archived/t`}
-                                               render={(props) => <ArchivedConversations basename={basename}
-                                                                                         type={'archived'} {...props} />}/>
+                                            render={(props) => <ArchivedConversations basename={basename}
+                                                type={'archived'} {...props} />} />
                                     </Switch>
                                 }
                             </div>
@@ -246,17 +256,17 @@ class ChatComponent extends Component {
                     </ul>
                 </div>
 
-                {(!isMobile || isTablet) ? <div className="col-lg-7 col-xs-12 col-md-7 div-profil-prim-plan" style={{paddingLeft:0}}>
-                        <div className="alert-mesaje alert-success-msg" style={{marginTop: 4, borderRadius: 2}}>
-                            {messageBox}
-                            <div className="clearfix"/>
-                        </div>
-                    </div> :
+                {(!isMobile || isTablet) ? <div className="col-lg-7 col-xs-12 col-md-7 div-profil-prim-plan" style={{ paddingLeft: 0 }}>
+                    <div className="alert-mesaje alert-success-msg" style={{ marginTop: 4, borderRadius: 2 }}>
+                        {messageBox}
+                        <div className="clearfix" />
+                    </div>
+                </div> :
                     <div>
                         <div className="col-lg-7 col-xs-12 col-md-7">
 
                             <div className="panel-collapse collapse" id="collapse1"
-                                 ref={(ref) => this.collapseRef = ref}>
+                                ref={(ref) => this.collapseRef = ref}>
                                 <div
                                     style={{
                                         position: 'fixed',
@@ -267,9 +277,9 @@ class ChatComponent extends Component {
                                         height: '100%',
                                     }}>
                                     <div className="alert-mesaje alert-success-msg"
-                                         style={{height: '100%', overflowY: 'scroll',backgroundColor: '#500750'}}>
+                                        style={{ height: '100%', overflowY: 'scroll', backgroundColor: '#500750' }}>
                                         {messageBox}
-                                        <div className="clearfix"/>
+                                        <div className="clearfix" />
                                     </div>
                                 </div>
                             </div>
@@ -283,7 +293,7 @@ class ChatComponent extends Component {
 }
 
 
-const mapStateToProps = ({conversations}) => ({
+const mapStateToProps = ({ conversations }) => ({
     stats: conversations.stats
 });
 

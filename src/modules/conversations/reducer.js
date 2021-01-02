@@ -279,7 +279,7 @@ export default (state = initialState, action) => {
                         }
                     },
                     stats: {
-                        unread_count: {$set: (isReaded === 1) ? (state.stats.unread_count + 1) : state.stats.unread_count}
+                        unread_count: {$set: (payload.message.user.id === conversation.sender.id) ? (state.stats.unread_count + 1) : state.stats.unread_count}
                     }
                 });
 
