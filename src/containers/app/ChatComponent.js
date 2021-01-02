@@ -77,8 +77,8 @@ class ChatComponent extends Component {
     getCount() {
         clearTimeout(this.timeoutCount);
         this.timeoutCount = setTimeout(function () {
-            console.log('este');
             this.props.countUnreadConversations();
+            this.getCount();
         }.bind(this), 1000)
     }
 
