@@ -1,13 +1,13 @@
-import React, {Component} from "react";
-import {push} from 'connected-react-router'
-import {bindActionCreators} from 'redux'
-import {connect} from 'react-redux'
+import React, { Component } from "react";
+import { push } from 'connected-react-router'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import TextareaComposer from "./TextareaComposer";
 import InfiniteScroll from 'react-infinite-scroller';
 import findIndex from 'lodash/findIndex';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import undefinedUser from '../../utils/UndefinedUser.js';
-import {arrayUnique} from '../../utils/Utils';
+import { arrayUnique } from '../../utils/Utils';
 import SingleMessage from "./SingleMessage";
 import moment from "moment";
 import ReactLoading from 'react-loading';
@@ -26,7 +26,7 @@ class UserMessages extends Component {
 
     constructor(props) {
         super(props);
-        const {username} = this.props.match.params;
+        const { username } = this.props.match.params;
         this.state = {
             loading: true,
             fetched: false,
@@ -47,7 +47,7 @@ class UserMessages extends Component {
         if (this.props.valid.list.length > 0 || this.props.unread.list.length > 0 || this.props.archived.list.length > 0 || this.props.search.list.length > 0) {
             let fullList = this.getConversationsFullList();
             return findIndex(fullList, function (conversation) {
-                if (conversation && conversation.receiver.username) {
+                if (conversation && conversation.receiver && conversation.receiver.username) {
                     return conversation.receiver.username.toLowerCase() === username.toLowerCase();
                 }
             });
@@ -97,7 +97,7 @@ class UserMessages extends Component {
             let nextPageUrl = fullList[conversationIndex].messagesPaginated.next_page_url;
             let conversationId = fullList[conversationIndex].id;
             this.props.fetchMoreMessages(nextPageUrl, conversationId).then((res) => {
-                if(res.data.messagesPaginated.next_page_url === null){
+                if (res.data.messagesPaginated.next_page_url === null) {
                     this.setState({
                         hasMoreItems: false,
                     });
@@ -107,7 +107,7 @@ class UserMessages extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        const {username} = this.props.match.params;
+        const { username } = this.props.match.params;
         if (username !== this.state.username) {
             this.setState({
                 username: username,
@@ -146,7 +146,7 @@ class UserMessages extends Component {
     }
 
     renderMessages() {
-        const {username} = this.props.match.params;
+        const { username } = this.props.match.params;
         let messages = this.getConversation(username);
 
         let currentDay = moment().format('DD-MMM-YYYY');
@@ -171,9 +171,9 @@ class UserMessages extends Component {
                         {
                             (currentDay !== previousDay) && (
                                 <p className="lineContainer text-center">
-                                    <span className="line"/>
+                                    <span className="line" />
                                     <span className="text">{currentDay}</span>
-                                    <span className="line"/>
+                                    <span className="line" />
                                 </p>
                             )
                         }
@@ -217,7 +217,7 @@ class UserMessages extends Component {
 
         if (this.state.loading && !conversation) {
             return <ReactLoading className={'center-block loader-pad'} type={'spin'} color='#921090' height={'15%'}
-                                 width={'15%'}/>
+                width={'15%'} />
         }
 
         return (
@@ -225,14 +225,14 @@ class UserMessages extends Component {
                 <div className="panel panel-default">
                     <div className="panel-heading user-info-panel">
                         {(userObject) &&
-                        <div>
-                            {isMobile &&
-                            <span className="glyphicon glyphicon-chevron-left" onClick={() => this.handleBack()}
-                                  style={{fontSize: 14, marginRight: 5}}/>}
-                            <a href={profileUrl}>{username}</a>,
+                            <div>
+                                {isMobile &&
+                                    <span className="glyphicon glyphicon-chevron-left" onClick={() => this.handleBack()}
+                                        style={{ fontSize: 14, marginRight: 5 }} />}
+                                <a href={profileUrl}>{username}</a>,
                             {' ' + userObject.city.ro_name},
                             activ acum {moment.unix(userObject.last_active).fromNow()}
-                        </div>}
+                            </div>}
                     </div>
                 </div>
 
@@ -247,12 +247,12 @@ class UserMessages extends Component {
                             console.log('load more')
                             this.loadMoreMessages(username);
                         }}
-                        hasMore={this.state.hasMoreItems && conversation.messagesPaginated.next_page_url !== null}
+                        hasMore={this.state.hasMoreItems && conversation.messagesPaginated && conversation.messagesPaginated.next_page_url !== null}
                         threshold={5}
                         useWindow={false}
                         loader={<ReactLoading key={Math.floor(Math.random() * 999999999)}
-                                              className={'center-block loader-pad'} type={'spin'} color='#921090'
-                                              height={'10%'} width={'10%'}/>}>
+                            className={'center-block loader-pad'} type={'spin'} color='#921090'
+                            height={'10%'} width={'10%'} />}>
                         <div className="tracks">
                             {this.renderMessages()}
                         </div>
@@ -260,7 +260,7 @@ class UserMessages extends Component {
                 </div>
                 <div>
                     {(conversation && conversation.is_typing) &&
-                    <span><img style={{height: 35}} src={require('../../assets/typing-indicator.gif')} alt=""/></span>}
+                        <span><img style={{ height: 35 }} src={require('../../assets/typing-indicator.gif')} alt="" /></span>}
                 </div>
                 <TextareaComposer
                     autofocus={true}
@@ -285,7 +285,7 @@ class UserMessages extends Component {
 }
 
 
-const mapStateToProps = ({conversations, session}) => ({
+const mapStateToProps = ({ conversations, session }) => ({
     valid: conversations.valid,
     unread: conversations.unread,
     archived: conversations.archived,

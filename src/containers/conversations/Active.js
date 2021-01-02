@@ -106,7 +106,7 @@ class ActiveConversations extends Component {
         let renderedConversations = [];
         if (this.props.list.list.length > 0) {
             this.props.list.list.forEach((conversation) => {
-                let message = conversation.messages[0] ? conversation.messages[0].message : {}
+                let message = conversation && conversation.messages && conversation.messages.length && conversation.messages[0] ? conversation.messages[0].message : {}
                 let isYou = false;
                 let isTyping = false;
 
@@ -183,8 +183,8 @@ class ActiveConversations extends Component {
                     transitionLeaveTimeout={300}>
                     <InfiniteScroll
                         dataLength={conversations.list.length}
-                        next={() => this.props.fetchMoreConversations(conversations.next_page_url)}
-                        hasMore={(conversations.next_page_url)}
+                        next={() => this.props.fetchMoreConversations(conversations && conversations.next_page_url)}
+                        hasMore={(conversations && conversations.next_page_url)}
                         height={440}
                         useWindow={false}
                         loader={<ReactLoading className={'center-block loader-pad'} type={'spin'} color='#921090' height={'15%'} width={'15%'} />}
