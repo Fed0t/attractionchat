@@ -1,12 +1,12 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import DropzoneComponent from 'react-dropzone-component';
-import {Tabs, Tab, Button} from 'react-bootstrap';
-import {Picker} from 'emoji-mart';
+import { Tabs, Tab, Button } from 'react-bootstrap';
+import { Picker } from 'emoji-mart';
 import 'emoji-mart/css/emoji-mart.css';
-import {stickersSoft, stickersHard} from './resources/stickers';
-import {push} from 'connected-react-router'
-import {bindActionCreators} from 'redux'
-import {connect} from 'react-redux'
+import { stickersSoft, stickersHard } from './resources/stickers';
+import { push } from 'connected-react-router'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
 import {
     dispatchMessageLocal,
@@ -16,7 +16,7 @@ import {
 import ModalBox from "../../containers/conversations/ModalBox";
 
 let componentConfig = {
-    iconFiletypes: ['.jpg', '.png', '.gif', '.mp4','.avi'],
+    iconFiletypes: ['.jpg', '.png', '.gif', '.mp4', '.avi'],
     showFiletypeIcon: true,
     postUrl: 'https://app.attractionclub.ro/api/v1/chat/send',
 };
@@ -131,7 +131,8 @@ class TextareaComposer extends Component {
     }
 
     sendMessage() {
-        if (Number(this.props.session.premium) === 0) {
+        let receiverId = Number(this.props.dropzoneConfig.params.receiver);
+        if (Number(this.props.session.premium) === 0 && receiverId !== 98119) {
             this.setState({
                 noPremiumModal: true,
             });
@@ -139,7 +140,6 @@ class TextareaComposer extends Component {
         }
 
         let message = this.state.message;
-        let receiverId = Number(this.props.dropzoneConfig.params.receiver);
         let senderId = Number(this.props.dropzoneConfig.params.sender);
         let params = {
             message: '' + this.state.message + '',
@@ -151,12 +151,12 @@ class TextareaComposer extends Component {
                 message: '',
             });
             this.props.sendMessage(params).then((res) => {
-                    this.props.scrollToBottom();
-                    this.textareaRef.focus();
-                    this.setState({
-                        sendingFailed: false,
-                    });
-                },
+                this.props.scrollToBottom();
+                this.textareaRef.focus();
+                this.setState({
+                    sendingFailed: false,
+                });
+            },
                 (err) => {
                     console.log(err);
                     this.setState({
@@ -171,7 +171,7 @@ class TextareaComposer extends Component {
         return (
             <div>
                 {(this.state.sendingFailed) &&
-                <div style={{color: 'red', fontSize: 12, float: 'right'}}>Message error...</div>}
+                    <div style={{ color: 'red', fontSize: 12, float: 'right' }}>Message error...</div>}
                 <div className="message-box-chat">
 
                     <textarea
@@ -184,80 +184,80 @@ class TextareaComposer extends Component {
                         onKeyDown={this._handleKeyPress}
                         className="form-control black-text"
                         placeholder={'Type a message...'}>
-                         {this.state.message}
-                     </textarea>
+                        {this.state.message}
+                    </textarea>
 
                     <div>
                         <div className="pull-left">
                             <div className="action-button" onClick={this.showDropZone}>
-                                <span className="glyphicon glyphicon-paperclip" style={{fontSize: 17, marginTop: 3}}/>
+                                <span className="glyphicon glyphicon-paperclip" style={{ fontSize: 17, marginTop: 3 }} />
                             </div>
                             <div className="action-button" onClick={this.showEmoji}>
-                                <img style={{height: 18}}
-                                     alt={'Emoticons'}
-                                     src="https://attractionclub.ro/chat/themes/facebook_no_bar/images/smilies/smile.png"/>
+                                <img style={{ height: 18 }}
+                                    alt={'Emoticons'}
+                                    src="https://attractionclub.ro/chat/themes/facebook_no_bar/images/smilies/smile.png" />
                             </div>
                             <div className="action-button" onClick={this.showStickers}>
-                                <img alt={'Stickers'} style={{height: 20}}
-                                     src="https://attractionclub.ro/assets/img/iconita.gif"/>
+                                <img alt={'Stickers'} style={{ height: 20 }}
+                                    src="https://attractionclub.ro/assets/img/iconita.gif" />
                             </div>
                         </div>
                         <div className="pull-right">
                             <button className="btn btn-md btn-default pull-right send-btn"
-                                    onClick={this.sendMessage}
-                                    id="send-btn">Trimite
+                                onClick={this.sendMessage}
+                                id="send-btn">Trimite
                             </button>
                         </div>
                     </div>
 
-                    <div className="clearfix"/>
+                    <div className="clearfix" />
                 </div>
 
                 <div>
-                    <div style={{marginTop: 10, display: (this.state.showDropzone) ? 'block' : 'none'}}>
+                    <div style={{ marginTop: 10, display: (this.state.showDropzone) ? 'block' : 'none' }}>
                         <DropzoneComponent config={componentConfig}
-                                           eventHandlers={{
-                                               successmultiple: (file, response) => {
-                                                   file.forEach((image) => {
-                                                       this.state.dropzoneObject.removeFile(image);
-                                                   });
-                                                   this.props.dispatchMessageLocal(response);
+                            eventHandlers={{
+                                successmultiple: (file, response) => {
+                                    file.forEach((image) => {
+                                        this.state.dropzoneObject.removeFile(image);
+                                    });
+                                    this.props.dispatchMessageLocal(response);
 
-                                                   this.showDropZone();
-                                               },
-                                               init: (dropzone) => {
-                                                   this.setState({
-                                                       dropzoneObject: dropzone
-                                                   });
-                                               },
-                                               addedfile: this.handleFileAdded.bind(this)
-                                           }}
-                                           djsConfig={this.props.dropzoneConfig}>
+                                    this.showDropZone();
+                                },
+                                init: (dropzone) => {
+                                    this.setState({
+                                        dropzoneObject: dropzone
+                                    });
+                                },
+                                addedfile: this.handleFileAdded.bind(this)
+                            }}
+                            djsConfig={this.props.dropzoneConfig}>
 
                             <div className="dz-message">
                                 <button className="btn btn-default2">
-                                <span className="glyphicon glyphicon-paperclip"
-                                      style={{color: '#FFF'}}/>
+                                    <span className="glyphicon glyphicon-paperclip"
+                                        style={{ color: '#FFF' }} />
                                     Alege poze sau un video...
                                 </button>
                             </div>
                             {this.state.showUpload && (
                                 <button onClick={this.handlePost.bind(this)} className="btn btn-danger"
-                                        style={{display: 'block', margin: '0 auto'}}>
-                                <span className="glyphicon glyphicon-send"
-                                      style={{color: '#FFF', margin: 2}}/>
-                                    <span style={{padding: 3}}>Trimite pozele</span>
+                                    style={{ display: 'block', margin: '0 auto' }}>
+                                    <span className="glyphicon glyphicon-send"
+                                        style={{ color: '#FFF', margin: 2 }} />
+                                    <span style={{ padding: 3 }}>Trimite pozele</span>
                                 </button>
                             )}
                         </DropzoneComponent>
                     </div>
 
-                    <div style={{marginTop: 10, display: (this.state.showEmoji) ? 'block' : 'none'}}>
-                        <Picker style={{width: '100%'}} showPreview={false} onSelect={this.addEmoji}/>
+                    <div style={{ marginTop: 10, display: (this.state.showEmoji) ? 'block' : 'none' }}>
+                        <Picker style={{ width: '100%' }} showPreview={false} onSelect={this.addEmoji} />
                     </div>
 
 
-                    <div style={{marginTop: 10, display: (this.state.showStickers) ? 'block' : 'none'}}>
+                    <div style={{ marginTop: 10, display: (this.state.showStickers) ? 'block' : 'none' }}>
                         <Tabs defaultActiveKey={1} id="stickers-tabs">
                             <Tab eventKey={1} title="Stickers Soft">
                                 {stickersSoft.map((sticker, index) => {
@@ -266,7 +266,7 @@ class TextareaComposer extends Component {
                                             this.setState({
                                                 message: sticker.name
                                             });
-                                        }} alt=""/>);
+                                        }} alt="" />);
                                 })}
                             </Tab>
                             <Tab eventKey={2} title="Stickers Hard">
@@ -276,7 +276,7 @@ class TextareaComposer extends Component {
                                             this.setState({
                                                 message: sticker.name
                                             });
-                                        }} alt=""/>);
+                                        }} alt="" />);
                                 })}
                             </Tab>
                         </Tabs>
@@ -284,37 +284,37 @@ class TextareaComposer extends Component {
                 </div>
 
                 <ModalBox show={this.state.noPremiumModal}
-                          closeModal={() => {
-                              this.setState({
-                                  noPremiumModal: false
-                              });
-                          }}
-                          size={'sm'}
-                          yesButton={<Button bsStyle="primary" onClick={() => {
-                              this.props.history.push('/subscription')
-                          }}>
-                              DA
+                    closeModal={() => {
+                        this.setState({
+                            noPremiumModal: false
+                        });
+                    }}
+                    size={'sm'}
+                    yesButton={<Button bsStyle="primary" onClick={() => {
+                        this.props.history.push('/subscription')
+                    }}>
+                        DA
                           </Button>}
-                          noButton={<a href="/subscription">
-                              <Button bsStyle="danger">DEVINO PREMIUM</Button>
-                          </a>}
-                          title={<div style={{color: '#FFF'}}>DEVINO PREMIUM</div>}
-                          body={<div style={{color: '#FFF', fontSize: 20}}>Imi pare rau dar nu esti PREMIUM! Acceseaza pagina de abonamente pentru mai multe detalii
-                              <strong><a style={{color: 'red'}} href="/subscription">
-                                  <img className="img-responsive" src={require('../../assets/abonamente.png')} alt=""/>
-                              </a>
-                              </strong>
-                          </div>}
-                          actionButton={() => {
-                              console.log('subscription')
-                          }}/>
+                    noButton={<a href="/subscription">
+                        <Button bsStyle="danger">DEVINO PREMIUM</Button>
+                    </a>}
+                    title={<div style={{ color: '#FFF' }}>DEVINO PREMIUM</div>}
+                    body={<div style={{ color: '#FFF', fontSize: 20 }}>Imi pare rau dar nu esti PREMIUM! Acceseaza pagina de abonamente pentru mai multe detalii
+                              <strong><a style={{ color: 'red' }} href="/subscription">
+                            <img className="img-responsive" src={require('../../assets/abonamente.png')} alt="" />
+                        </a>
+                        </strong>
+                    </div>}
+                    actionButton={() => {
+                        console.log('subscription')
+                    }} />
             </div>
 
         )
     }
 }
 
-const mapStateToProps = ({conversations, session}) => ({
+const mapStateToProps = ({ conversations, session }) => ({
     session: session
 });
 
